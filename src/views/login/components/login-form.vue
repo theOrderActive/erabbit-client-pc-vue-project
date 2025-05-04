@@ -179,8 +179,8 @@ export default {
           })
         } catch (e) {
           // 失败提示
-          if (e.response.data) {
-            Message({ type: 'error', text: e.response.data.message || '登录失败' })
+          if (e) {
+            Message({ type: 'error', text: e.message || '登录失败' })
           }
         }
       }
@@ -229,8 +229,10 @@ export default {
     // onMounted(() => {
     //   QC.Login({ btnId: 'qqLoginBtn' })
     // })
-    const appId = process.env.VUE_APP_QQAPPID
-    const qqBack = encodeURIComponent(process.env.VUE_APP_QQBACK)
+    // const appId = process.env.VUE_APP_QQAPPID
+    // const qqBack = encodeURIComponent(process.env.VUE_APP_QQBACK)
+    const appId = 101941968
+    const qqBack = encodeURIComponent('http://www.corho.com:8080/#/login/callback')
     const qqUrl = `https://graph.qq.com/oauth2.0/authorize?client_id=${appId}&response_type=token&scope=all&redirect_uri=${qqBack}`
 
     return { isMsgLogin, form, schema: mySchema, formCom, login, send, time, qqUrl }

@@ -5,7 +5,7 @@
 // import XtxMore from './xtx-more.vue'
 // import XtxBread from './xtx-bread.vue'
 // import XtxBreadItem from './xtx-bread-item.vue'
-
+import Message from './Message'
 // 导入library文件夹下的所有组件
 // 批量导入需要使用一个函数 require.context(dir,deep,matching)
 // 参数：1. 目录  2. 是否加载子目录  3. 加载的正则匹配
@@ -30,6 +30,8 @@ export default {
 
     // 定义指令
     defineDirective(app)
+    // 定义一个原型函数
+    app.config.globalProperties.$message = Message
   }
 }
 
