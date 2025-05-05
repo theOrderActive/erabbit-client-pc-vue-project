@@ -22,5 +22,14 @@ module.exports = defineConfig({
     config.devServer.set('allowedHosts', 'all') // 允许所有主机访问
     // 或者指定特定的主机
     // config.devServer.set('allowedHosts', ['your-host.com']);
+  },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'https://apipc-xiaotuxian-front.itheima.net', // 目标服务器地址
+        changeOrigin: true, // 改变请求的源头
+        pathRewrite: { '^/api': '' } // 路径重写
+      }
+    }
   }
 })

@@ -47,9 +47,10 @@
 
 <script>
 
-import { nextTick, ref, watch, provide } from 'vue'
-import { findGoods } from '@/api/product'
+import { nextTick, ref, watch, provide, getCurrentInstance } from 'vue'
+import { findGoods } from '@/api/goods'
 import { useRoute } from 'vue-router'
+import { useStore } from 'vuex'
 import GoodsSales from './components/goods-sales'
 import GoodsName from './components/goods-name'
 import GoodsRelevant from './components/goods-relevant'
@@ -62,6 +63,7 @@ export default {
   name: 'XtxGoodsPage',
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
   setup () {
+    // 选择的数量
     const num = ref(1)
     const goods = useGoods()
     provide('goods', goods)
@@ -71,9 +73,40 @@ export default {
         goods.value.price = sku.price
         goods.value.oldPrice = sku.oldPrice
         goods.value.inventory = sku.inventory
+        currSku.value = sku
+      } else {
+        currSku.value = null
       }
     }
-    return { num, goods, changeSku }
+
+    // 加入购物车逻辑
+    const currSku = ref(null)
+    const instance = getCurrentInstance()
+    const store = useStore()
+    const insertCart = () => {
+      if (!currSku.value) {
+        return instance.proxy.$message('请选择商品规格')
+      }
+      if (num.value > goods.inventory) {
+        return instance.proxy.$message('库存不足')
+      }
+      store.dispatch('cart/insertCart', {
+        id: goods.value.id,
+        skuId: currSku.value.skuId,
+        name: goods.value.name,
+        picture: goods.value.mainPictures[0],
+        price: currSku.value.price,
+        nowPrice: currSku.value.price,
+        count: num.value,
+        attrsText: currSku.value.specsText,
+        selected: true,
+        isEffective: true,
+        stock: currSku.value.inventory
+      }).then(() => {
+        instance.proxy.$message('加入购物车成功', 'success')
+      })
+    }
+    return { goods, changeSku, num, insertCart }
   }
 }
 // 获取商品详情
