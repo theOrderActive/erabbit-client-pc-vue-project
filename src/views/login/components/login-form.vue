@@ -117,7 +117,7 @@ export default {
     const mySchema = {
       // 校验函数规则：返回true就是校验成功，返回一个字符串就是失败，字符串就是错误提示
       account: schema.account,
-      password: schema.password,
+      // password: schema.password,
       mobile: schema.mobile,
       code: schema.code,
       isAgree: schema.isAgree
