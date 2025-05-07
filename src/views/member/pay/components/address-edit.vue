@@ -19,7 +19,7 @@
         <div class="field">
           <XtxCity
             placeholder="请选择所在地区"
-            :fullLocation="form?.fullLocation"
+            :fullLocation="formData?.fullLocation"
             @change="changeCty"
           />
         </div>
@@ -51,21 +51,14 @@
   </XtxDialog>
 </template>
 <script>
-import { ref, reactive } from 'vue'
+import { ref, reactive, getCurrentInstance } from 'vue'
 import Message from '@/components/library/Message'
-import { addAddress } from '@/api/order'
+import { addAddress, editAddress } from '@/api/order'
 export default {
   name: 'AddressEdit',
   setup (props, { emit }) {
     const dialogVisible = ref(false)
-    // 打开函数
-    const open = (form) => {
-      dialogVisible.value = true
-      // 传人{}的时候就是清空，否则就是赋值
-      for (const key in formData) {
-        formData[key] = form[key]
-      }
-    }
+    // 打开对话框函数
     // 表单数据
     const formData = reactive({
       id: '',
@@ -80,6 +73,23 @@ export default {
       addressTags: '',
       isDefault: 0
     })
+    const open = (address) => {
+      // 先填充数据 - 编辑
+      if (address.id) {
+        for (const key in formData) {
+          formData[key] = address[key]
+        }
+      } else {
+        // 先清空数据 - 添加
+        for (const key in formData) {
+          if (key !== 'isDefault') {
+            formData[key] = ''
+          }
+        }
+      }
+      dialogVisible.value = true
+    }
+
     // 选择地区
     const changeCty = (data) => {
       formData.provinceCode = data.provinceCode
@@ -88,14 +98,24 @@ export default {
       formData.fullLocation = data.fullLocation
     }
     // 提交操作
+    const app = getCurrentInstance()
     const submit = () => {
-      addAddress(formData).then(data => {
-        // 添加成功
-        Message({ text: '添加收货地址成功', type: 'success' })
-        formData.id = data.result.id
-        dialogVisible.value = false
-        emit('on-success', formData)
-      })
+      if (formData.id) {
+        editAddress(formData).then(data => {
+          // 修改成功
+          Message(app, { text: '修改收货地址成功', type: 'success' })
+          dialogVisible.value = false
+          emit('on-success', formData)
+        })
+      } else {
+        addAddress(formData).then(data => {
+          // 添加成功
+          Message(app, { text: '添加收货地址成功', type: 'success' })
+          formData.id = data.result.id
+          dialogVisible.value = false
+          emit('on-success', formData)
+        })
+      }
     }
     return { dialogVisible, open, formData, changeCty, submit }
   }
