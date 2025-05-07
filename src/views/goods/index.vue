@@ -47,7 +47,7 @@
 
 <script>
 
-import { nextTick, ref, watch, provide, getCurrentInstance } from 'vue'
+import { nextTick, ref, watch, provide } from 'vue'
 import { findGoods } from '@/api/goods'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
@@ -59,6 +59,7 @@ import GoodsSku from './components/goods-sku'
 import GoodsTabs from './components/goods-tabs'
 import GoodsHot from './components/goods-hot'
 import GoodsWarn from './components/goods-warn'
+import Message from '@/components/library/Message'
 export default {
   name: 'XtxGoodsPage',
   components: { GoodsRelevant, GoodsImage, GoodsSales, GoodsName, GoodsSku, GoodsTabs, GoodsHot, GoodsWarn },
@@ -81,14 +82,15 @@ export default {
 
     // 加入购物车逻辑
     const currSku = ref(null)
-    const instance = getCurrentInstance()
     const store = useStore()
     const insertCart = () => {
       if (!currSku.value) {
-        return instance.proxy.$message('请选择商品规格')
+        Message({ type: 'warn', text: '请选择商品规格' })
+        return
       }
       if (num.value > goods.inventory) {
-        return instance.proxy.$message('库存不足')
+        Message({ type: 'warn', text: '库存不足' })
+        return
       }
       store.dispatch('cart/insertCart', {
         id: goods.value.id,
@@ -103,7 +105,7 @@ export default {
         isEffective: true,
         stock: currSku.value.inventory
       }).then(() => {
-        instance.proxy.$message('加入购物车成功', 'success')
+        Message({ type: 'success', text: '加入购物车成功' })
       })
     }
     return { goods, changeSku, num, insertCart }
