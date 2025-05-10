@@ -14,7 +14,8 @@ const PayIndex = () => import('@/views/member/pay/index')
 const MemberLayout = () => import('@/views/member/Layout')
 const MemberHome = () => import('@/views/member/home')
 const MemberOrder = () => import('@/views/member/order')
-// const MemberOrderDetail = () => import('@/views/member/order/detail')
+const MemberOrderDetail = () => import('@/views/member/order/detail')
+const PayResult = () => import('@/views/member/pay/result')
 const routes = [
   {
     path: '/',
@@ -27,6 +28,7 @@ const routes = [
       { path: '/cart', component: Cart },
       { path: '/member/checkout', component: PayCheckout },
       { path: '/member/pay', component: PayIndex },
+      { path: '/pay/callback', component: PayResult },
       {
         path: '/member',
         component: MemberLayout,
@@ -36,11 +38,11 @@ const routes = [
           // { path: '/member/order/:id', component: MemberOrderDetail }
           {
             path: '/member/order',
-            // 创建一个RouterView容器形成嵌套关系
+            // 创建一个RouterView容器形成嵌套关系，非精确匹配
             component: { render: () => h(<RouterView />) },
             children: [
-              { path: '', component: MemberOrder }
-              // { path: ':id', component: MemberOrderDetail }
+              { path: '', component: MemberOrder },
+              { path: ':id', component: MemberOrderDetail }
             ]
           }
         ]
